@@ -88,8 +88,7 @@ def signature_root(key,root):
         if tmp == '-----END RSA PRIVATE KEY-----':
             break
 
-    print(key)
-    message = root
+    message = root.encode()
     private_key = serialization.load_pem_private_key(key.encode(),password=None,backend=default_backend())
     signature = private_key.sign(
         message,
@@ -99,7 +98,35 @@ def signature_root(key,root):
         ),
         hashes.SHA256()
     )
-    print(signature.decode('utf-8'))
+    print(base64.b64encode(signature).decode())
+
+def verify_sign(public_key):
+    while True:
+        tmp = input()
+        public_key = public_key + "\n" + tmp
+        if tmp == '-----END PUBLIC KEY-----':
+            break
+    signature = input()
+    txt = input().encode()
+    public_key = serialization.load_pem_public_key(public_key.encode(),backend=default_backend())
+
+    try:
+
+        public_key.verify(
+            base64.b64decode(signature),
+            txt,
+            padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256()
+        )
+        print(True)
+    except:
+        print(False)
+
+
+
 
 
 if __name__ == '__main__':
@@ -109,6 +136,10 @@ if __name__ == '__main__':
         res_list_proof = []
         parameter = input()
         action_value = parameter.split()
+
+        if len(action_value) == 0:
+             print('')
+             continue
         choose = action_value[0]
 
         if choose == '1':
@@ -127,6 +158,9 @@ if __name__ == '__main__':
             begin = " ".join(str(x) for x in action_value[1:])
             signature_root(begin, find_root(list, 0, len(list)-1))
         elif choose == '7':
-            fun7()
+            public_key = " ".join(str(x) for x in action_value[1:])
+            verify_sign(public_key)
+        else:
+            print('')
 
 
