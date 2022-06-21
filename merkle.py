@@ -36,7 +36,7 @@ def find_root(list, first, end):
 def find_proof(list, i, j, index, result_list,side):
     # if we reach to single leaf in the array - i == j then we add the side of it and the leaf.
     if i == j:
-        result_list.append(str(side)+list[index])
+        # result_list.append(str(side)+list[index])
         return
     # we find the biggest power of two that contain in our list size
     x = math.floor(math.log((j - i + 1), 2))
@@ -59,9 +59,10 @@ def print_the_proof(res_list_proof):
 def proof_of_inclusion(leaf,root,proof):
     tmp = hashlib.sha256(str(leaf).encode('utf-8')).hexdigest()
     # we do hash on pairs by the 0 or 1 that appears in the first bit of the hash to decide who come left or right.
-    for x in proof[1:]:
+    for x in proof:
         if x[0]=='1':
-            tmp = hashlib.sha256(str(tmp+x[1:]).encode('utf-8')).hexdigest()
+            s=tmp+x[1:]
+            tmp = hashlib.sha256(str(s).encode('utf-8')).hexdigest()
         else:
             tmp = hashlib.sha256(str(x[1:]+tmp).encode('utf-8')).hexdigest()
     print(root == tmp)
@@ -94,7 +95,7 @@ def signature_root(key,root):
         key = key + "\n" + tmp
         if tmp == '-----END RSA PRIVATE KEY-----':
             break
-
+    input()
     message = root.encode()
     private_key = serialization.load_pem_private_key(key.encode(),password=None,backend=default_backend())
     signature = private_key.sign(
@@ -114,9 +115,16 @@ def verify_sign(public_key):
         public_key = public_key + "\n" + tmp
         if tmp == '-----END PUBLIC KEY-----':
             break
+    input()
     signature = input()
     txt = input().encode()
-    public_key = serialization.load_pem_public_key(public_key.encode(),backend=default_backend())
+    public_key = serialization.load_pem_public_key(public_key.encode(), backend=default_backend())
+    # input()
+    # signature_txt = input()
+    # signature_txt_array=signature_txt.split()
+    # signature = signature_txt_array[0]
+    # txt = signature_txt_array[1]
+    # public_key = serialization.load_pem_public_key(public_key.encode(), backend=default_backend())
 
     # we try to verify. if it true then we print true. if we reach to except then it failed so we return false.
     try:
@@ -144,10 +152,11 @@ if __name__ == '__main__':
         action_value = parameter.split()
 
         if len(action_value) == 0:
-             print('')
+             print('error')
              continue
-        choose = action_value[0]
+
         try:
+            choose = action_value[0]
             if choose == '1':
                 # we return the return the string from the list
                 var =" ".join(str(x) for x in action_value[1:])
