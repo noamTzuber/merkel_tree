@@ -4,9 +4,18 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 import hashlib
+import json
 import math
 import base64
 import socket
+from sys import stdin
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
 
 def add_node(list,leaf):
@@ -49,9 +58,48 @@ def proof_of_inclusion(leaf,root,proof):
     tmp = hashlib.sha256(str(leaf).encode('utf-8')).hexdigest()
     for x in proof:
         tmp = hashlib.sha256(str(tmp+x).encode('utf-8')).hexdigest()
-
     print(root == tmp)
 
+def genarate_keys():
+
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    pem_private = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    public_key = private_key.public_key()
+
+    pem_public = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+    print(pem_private.decode('utf-8'))
+    print(pem_public.decode('utf=8'))
+
+def signature_root(key,root):
+    while True:
+        tmp =input()
+        key = key + "\n" + tmp
+        if tmp == '-----END RSA PRIVATE KEY-----':
+            break
+
+    print(key)
+    message = root
+    private_key = serialization.load_pem_private_key(key.encode(),password=None,backend=default_backend())
+    signature = private_key.sign(
+        message,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH
+        ),
+        hashes.SHA256()
+    )
+    print(signature.decode('utf-8'))
 
 
 if __name__ == '__main__':
@@ -73,11 +121,12 @@ if __name__ == '__main__':
             print_the_proof(res_list_proof)
         elif choose == '4':
             proof_of_inclusion(action_value[1],action_value[2],action_value[3:])
-        elif choose == 5:
-            fun5()
-        elif choose == 6:
-            fun6()
-        elif choose == 7:
+        elif choose == '5':
+            genarate_keys()
+        elif choose == '6':
+            begin = " ".join(str(x) for x in action_value[1:])
+            signature_root(begin, find_root(list, 0, len(list)-1))
+        elif choose == '7':
             fun7()
 
 
