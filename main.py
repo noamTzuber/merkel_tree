@@ -1,21 +1,15 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Itay Shwartz 318528171
+# Noam Tzuberi 313374837
 
 import hashlib
-import json
 import math
 import base64
-import socket
-from sys import stdin
-
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
+
 
 
 def add_node(list,leaf):
@@ -141,26 +135,28 @@ if __name__ == '__main__':
              print('')
              continue
         choose = action_value[0]
-
-        if choose == '1':
-            add_node(list, action_value[1])
-        elif choose == '2':
-            print(find_root(list, 0, len(list)-1))
-        elif choose == '3':
-            res_list_proof.append(find_root(list, 0, len(list)-1))
-            find_proof(list, 0, len(list)-1, int(action_value[1]), res_list_proof)
-            print_the_proof(res_list_proof)
-        elif choose == '4':
-            proof_of_inclusion(action_value[1],action_value[2],action_value[3:])
-        elif choose == '5':
-            genarate_keys()
-        elif choose == '6':
-            begin = " ".join(str(x) for x in action_value[1:])
-            signature_root(begin, find_root(list, 0, len(list)-1))
-        elif choose == '7':
-            public_key = " ".join(str(x) for x in action_value[1:])
-            verify_sign(public_key)
-        else:
+        try:
+            if choose == '1':
+                var =" ".join(str(x) for x in action_value[1:])
+                add_node(list, var)
+            elif choose == '2':
+                print(find_root(list, 0, len(list)-1))
+            elif choose == '3':
+                res_list_proof.append(find_root(list, 0, len(list)-1))
+                find_proof(list, 0, len(list)-1, int(action_value[1]), res_list_proof)
+                print_the_proof(res_list_proof)
+            elif choose == '4':
+                proof_of_inclusion(action_value[1],action_value[2],action_value[3:])
+            elif choose == '5':
+                genarate_keys()
+            elif choose == '6':
+                begin = " ".join(str(x) for x in action_value[1:])
+                signature_root(begin, find_root(list, 0, len(list)-1))
+            elif choose == '7':
+                public_key = " ".join(str(x) for x in action_value[1:])
+                verify_sign(public_key)
+            else:
+                print('')
+        except:
             print('')
-
 
