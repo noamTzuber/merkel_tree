@@ -1,5 +1,4 @@
 # Itay Shwartz, 318528171, Noam Tzuberi, 313374837
-
 import hashlib
 import math
 import base64
@@ -116,8 +115,11 @@ def verify_sign(public_key):
         if tmp == '-----END PUBLIC KEY-----':
             break
     input()
-    signature = input()
-    txt = input().encode()
+
+    signature_and_txt = input().split()
+
+    signature = signature_and_txt[0]
+    txt = signature_and_txt[1].encode()
     public_key = serialization.load_pem_public_key(public_key.encode(), backend=default_backend())
     # input()
     # signature_txt = input()
@@ -152,7 +154,6 @@ if __name__ == '__main__':
         action_value = parameter.split()
 
         if len(action_value) == 0:
-             print('error')
              continue
 
         try:
@@ -160,7 +161,11 @@ if __name__ == '__main__':
             if choose == '1':
                 # we return the return the string from the list
                 var =" ".join(str(x) for x in action_value[1:])
-                add_node(list, var)
+                if var == '':
+                    print('')
+                else:
+                    add_node(list, var)
+
             elif choose == '2':
                 res=(find_root(list, 0, len(list)-1))
                 if res is None:
@@ -186,4 +191,3 @@ if __name__ == '__main__':
                 print('')
         except:
             print('')
-
